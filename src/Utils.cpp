@@ -143,12 +143,8 @@ namespace RozeFoundUtils {
 
             switch (Case) {
                 using enum casing;
-                case upper:
-                    hexDigits = "0123456789ABCDEF";
-                    break;
-                case lower:
-                    hexDigits = "0123456789abcdef";
-                    break;
+                case upper: hexDigits = "0123456789ABCDEF"; break;
+                case lower: hexDigits = "0123456789abcdef"; break;
             }
 
             std::string result;

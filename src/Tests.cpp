@@ -86,6 +86,7 @@ void ArrayTest() {
 }
 
 void test_hashes() {
+	
 	if (auto file = u::read_from_file("../data/Sodium.jar")) {
 
 		u::makeTimer("xxhash",  [&]{
