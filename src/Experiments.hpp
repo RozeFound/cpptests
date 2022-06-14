@@ -1,9 +1,6 @@
-module;
+#pragma once
 
 #include <iterator>
-
-export module Experiments;
-import RozeFoundUtils;
 
 namespace ns {
 
@@ -11,7 +8,7 @@ namespace ns {
 
 		using difference_type = std::ptrdiff_t;
 
-		using value_type = container::value_type;
+		using value_type = typename container::value_type;
 		using pointer = value_type*;
 		using reference = value_type&;
 
@@ -49,11 +46,11 @@ namespace ns {
 	};
 }
 
-export template<typename T = int> class array {
+template<typename T = int> class array {
 
 public:
 
-	using value_type = typename T;
+	using value_type = T;
 	using iterator = ns::iterator<array<T>>;
 	using reverse_iterator = std::reverse_iterator<iterator>;
 
