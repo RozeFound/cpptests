@@ -17,6 +17,7 @@
 #include <xxh3.h>
 #include "sha1.hpp"
 #include "sha512.hpp"
+#include "murmurhash2.hpp"
 
 namespace u = RozeFoundUtils;
 
@@ -84,10 +85,8 @@ void ArrayTest() {
 	u::print("Array:", arr | ext::join);
 }
 
-uint32_t MurmurHash2 (const void * key, int len, uint32_t seed);
-
 void test_hashes() {
-	if (auto file = u::read_from_file("/home/rozefound/Desktop/Sodium.jar")) {
+	if (auto file = u::read_from_file("../data/Sodium.jar")) {
 
 		u::makeTimer("xxhash",  [&]{
 			auto hash = XXH3_64bits(file->data(), file->size());
