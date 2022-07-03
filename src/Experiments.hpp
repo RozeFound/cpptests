@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <algorithm>
 
 namespace ns {
 

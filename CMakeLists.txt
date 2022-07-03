@@ -3,6 +3,10 @@ project(cpptests)
 
 SET (CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif()
+
 file(GLOB SOURCES
     src/*.hpp
     src/*.cpp

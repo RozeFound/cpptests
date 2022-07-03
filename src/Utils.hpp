@@ -5,6 +5,7 @@
 #include <functional>
 #include <optional>
 #include <filesystem>
+#include <sstream>
 
 #ifdef THIRD_PARTY
 #include <xxh3.h>

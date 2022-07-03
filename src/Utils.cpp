@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <thread>
+#include <vector>
 
 namespace RozeFoundUtils {
 
@@ -35,8 +36,8 @@ namespace RozeFoundUtils {
     }
     void parallelFor(size_t start, size_t end, std::function<void(int)> function) {
 
-        size_t thread_count = std::min((size_t)std::jthread::hardware_concurrency(), end);
-        std::vector<std::jthread> threads;
+        size_t thread_count = std::min((size_t)std::thread::hardware_concurrency(), end);
+        std::vector<std::thread> threads;
 
         auto func = [&](size_t min, size_t max) {
             for (size_t i = min; i <= max; i++)
@@ -53,7 +54,7 @@ namespace RozeFoundUtils {
             if (i == thread_count)
                 max += leftover;
 
-            threads.push_back(std::jthread(func, min, max));
+            threads.push_back(std::thread(func, min, max));
         }
 
         for (auto &thread : threads)

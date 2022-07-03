@@ -2,6 +2,7 @@
 #include <thread>
 #include <cmath>
 #include <atomic>
+#include <ranges>
 
 //import RozeFoundUtils;
 //import Experiments;
@@ -45,8 +46,8 @@ void MultiThreading() {
 		}
 	};
 
-	unsigned int thread_count = std::jthread::hardware_concurrency();
-	std::vector<std::jthread> threads;
+	unsigned int thread_count = std::thread::hardware_concurrency();
+	std::vector<std::thread> threads;
 
 	u::Timer timer;
 
@@ -59,7 +60,7 @@ void MultiThreading() {
 		size_t max = leftover + base * (i + 1);
 		if (i == thread_count) max += leftover;
 
-		threads.push_back(std::jthread(func, min, max));
+		threads.push_back(std::thread(func, min, max));
 	}
 
 
@@ -80,7 +81,8 @@ void ArrayTest() {
 	auto arr = array(size);
 	for (int& n : arr) n = rand();
 
-	std::ranges::sort(arr);
+	// std::ranges::sort(arr);
+	std::sort(arr.begin(), arr.end());
 
 	u::print("Array:", arr | ext::join);
 }
