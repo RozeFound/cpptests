@@ -8,7 +8,6 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 endif()
 
 file(GLOB SOURCES
-    src/*.hpp
     src/*.cpp
     include/*.cpp
 )

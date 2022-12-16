@@ -14,8 +14,9 @@
 #include <functional>
 #include <algorithm>
 
-
+#ifdef THIRD_PARTY
 #include <xxh3.h>
+#endif
 #include "sha1.hpp"
 #include "sha512.hpp"
 #include "murmurhash2.hpp"
@@ -91,9 +92,11 @@ void test_hashes() {
 	
 	if (auto file = u::read_from_file("../data/Sodium.jar")) {
 
+#ifdef THIRD_PARTY
 		u::makeTimer("xxhash",  [&]{
 			auto hash = XXH3_64bits(file->data(), file->size());
 		});
+#endif
 
 		u::makeTimer("sha1", [&]{
 			SHA1 checksum;

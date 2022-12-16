@@ -1,5 +1,6 @@
 #pragma once
 
+#include <type_traits>
 #include <iostream>
 #include <chrono>
 #include <functional>
@@ -17,6 +18,12 @@ namespace RozeFoundUtils {
 	auto print = [](const auto& ... Args) {
 		((std::cout << Args << ' '), ...) << std::endl;
 	};
+
+	template<typename T> auto get_at_offset(auto& _class, std::ptrdiff_t offset) {
+		auto offset_value = reinterpret_cast<std::ptrdiff_t>(&_class) + offset;
+		if constexpr (std::is_same<T, char*>::value) return (char*)offset_value;
+		else return std::ref(*reinterpret_cast<T*>(offset_value));
+	}
 
 	class Timer {
 
