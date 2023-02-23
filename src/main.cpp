@@ -1,28 +1,19 @@
 #include "Experiments.hpp"
 #include "Utils.hpp"
 #include "Tests.hpp"
-#include <__functional/unwrap_ref.h>
-#include <cstddef>
-#include <cstring>
+
+#include <vector>
 
 namespace u = RozeFoundUtils;
 
-class A {
-	int secret = 666;
-	char hello[16] = "Hello World!\0";
-	int second_secret = 1337;
-public:
-	int number = 42;
-};
-
 int main(int argc, char* argv[]) {
+	
+	auto args = std::vector(argv, argv + argc);
 
-	A a;
+	auto process_id = u::get_process_id("spotify");
+	auto process_module = u::get_module_base(process_id);
 
-	u::print("number is:", a.number);
-	u::print("secret is:", u::get_at_offset<int>(a, 0));
-	u::print("second secret is:", u::get_at_offset<int>(a, 20));
-	u::print(u::get_at_offset<char*>(a, 4));
+	std::cout << std::hex << process_module << std::endl;
 
 	return 0;
 }

@@ -115,4 +115,26 @@ void test_hashes() {
 			auto hash = MurmurHash2(data.data(), data.size(), 1);
 		});
 	};
+
+}
+
+class A {
+	int secret = 666;
+	char hello[16] = "Hello World!\0";
+	int second_secret = 1337;
+
+	void func() {
+		std::cout << "You got me!" << std::endl;
+	}
+
+};
+
+void test_access_private_members() {
+
+	A a;
+
+	u::print("secret is:", u::get_at_offset<int>(a, 0));
+	u::print("second secret is:", u::get_at_offset<int>(a, 20));
+	u::print(u::get_at_offset<char*>(a, 4));
+
 }

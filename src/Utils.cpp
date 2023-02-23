@@ -1,4 +1,5 @@
 #include "Utils.hpp"
+#include "fmt/core.h"
 
 #include <fstream>
 #include <thread>
@@ -6,10 +7,58 @@
 
 namespace RozeFoundUtils {
 
+        uint32_t get_process_id (std::string_view process_name) {
+
+        namespace fs = std::filesystem;
+
+        for (const auto& entry : fs::directory_iterator("/proc/")) {
+
+            if (!entry.is_directory()) continue;
+
+            for (const auto& entry : fs::directory_iterator(entry.path())) {
+
+                try {
+                    if (!entry.is_regular_file() || entry.path().filename() != "status") continue; 
+                } catch (fs::filesystem_error error) { print(error.what()); continue; }
+                
+                if (auto file = read_from_file(entry.path())) {
+                    if (file->find(process_name) != std::string::npos) {
+                        return std::stol(entry.path().parent_path().stem().string());
+                    }
+                }
+            }
+        }
+
+        return 0xDEADC0DE;
+
+    }
+
+    std::ptrdiff_t get_module_base (uint32_t process_id, std::string_view module) {
+
+        auto maps_path = fmt::format("/proc/{}/maps", process_id);
+        if (process_id == 0) maps_path = "/proc/self/maps";
+
+        auto maps = read_from_file(maps_path);
+
+        std::size_t start;
+
+        if (module.empty()) start = maps->find("r-xp");
+        else start = maps->find(module);
+
+        std::size_t end = start;
+
+        while (maps->at(start) != '\n') start--;
+        while (maps->at(end) != '-') end--;
+
+        return std::stol(maps->substr(start, end - start), 0, 16);
+
+    }
+
     void makeTimer(std::string_view name, std::function<void()> func) {
         Timer timer(name);
         func();
     }
+
     void write_to_file(std::string_view string, std::filesystem::path filepath) {
 
       std::ofstream file;
@@ -20,6 +69,7 @@ namespace RozeFoundUtils {
 
       file.close();
     }
+
     std::optional<std::string> read_from_file(std::filesystem::path filepath) {
 
         std::ifstream file;
@@ -34,6 +84,7 @@ namespace RozeFoundUtils {
             return std::nullopt;
         }
     }
+
     void parallelFor(size_t start, size_t end, std::function<void(int)> function) {
 
         size_t thread_count = std::min((size_t)std::thread::hardware_concurrency(), end);

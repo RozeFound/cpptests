@@ -25,6 +25,9 @@ namespace RozeFoundUtils {
 		else return std::ref(*reinterpret_cast<T*>(offset_value));
 	}
 
+	uint32_t get_process_id (std::string_view process_name);
+	std::ptrdiff_t get_module_base (uint32_t process_id = 0, std::string_view module = "");
+
 	class Timer {
 
 	public:
