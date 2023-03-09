@@ -1,13 +1,13 @@
 #include "Utils.hpp"
-#include "fmt/core.h"
 
+#include <filesystem>
 #include <fstream>
 #include <thread>
 #include <vector>
 
 namespace RozeFoundUtils {
 
-        uint32_t get_process_id (std::string_view process_name) {
+    uint32_t get_process_id (std::string_view process_name) {
 
         namespace fs = std::filesystem;
 
@@ -17,10 +17,9 @@ namespace RozeFoundUtils {
 
             for (const auto& entry : fs::directory_iterator(entry.path())) {
 
-                try {
-                    if (!entry.is_regular_file() || entry.path().filename() != "status") continue; 
-                } catch (fs::filesystem_error error) { print(error.what()); continue; }
-                
+                std::error_code ec; auto file_type = entry.status(ec).type();
+                if (file_type != fs::file_type::regular || entry.path().filename() != "status") continue; 
+
                 if (auto file = read_from_file(entry.path())) {
                     if (file->find(process_name) != std::string::npos) {
                         return std::stol(entry.path().parent_path().stem().string());
@@ -35,7 +34,7 @@ namespace RozeFoundUtils {
 
     std::ptrdiff_t get_module_base (uint32_t process_id, std::string_view module) {
 
-        auto maps_path = fmt::format("/proc/{}/maps", process_id);
+        auto maps_path = "/proc/" + std::to_string(process_id) + "/maps";
         if (process_id == 0) maps_path = "/proc/self/maps";
 
         auto maps = read_from_file(maps_path);
@@ -51,6 +50,27 @@ namespace RozeFoundUtils {
         while (maps->at(end) != '-') end--;
 
         return std::stol(maps->substr(start, end - start), 0, 16);
+
+    }
+
+    std::ptrdiff_t basic_sigscan(std::ptrdiff_t start, std::string_view signature) {
+
+        auto _addr = (char*)start;
+        std::vector<bool> hits(signature.size());
+
+        while (hits.at(signature.size() - 1) != true) {
+            
+            for (std::size_t i = 0; i < signature.size(); i++) {
+
+                if (*(_addr++) == signature.at(i))
+                    hits.at(i) = true;
+                else break;
+
+            }
+
+        }
+
+        return std::ptrdiff_t(_addr - signature.size());
 
     }
 

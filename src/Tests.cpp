@@ -119,13 +119,20 @@ void test_hashes() {
 }
 
 class A {
+	
 	int secret = 666;
 	char hello[16] = "Hello World!\0";
 	int second_secret = 1337;
 
-	void func() {
-		std::cout << "You got me!" << std::endl;
+	// still being deleted in release mode...
+	void func(bool stop_compiler_from_deleting) {
+		if(!stop_compiler_from_deleting)
+			std::cout << "You got me!" << std::endl;
 	}
+
+	public:
+
+	A ( ) { func(true); }
 
 };
 
@@ -133,8 +140,13 @@ void test_access_private_members() {
 
 	A a;
 
+	auto signature = "\x55\x48\x89\xE5\x48\x83\xEC\x10\x40\x88\xF0";
+	auto func_address = u::basic_sigscan(u::get_module_base(), signature);
+	auto private_func = (void(__cdecl*)(void* _this))func_address;
+
 	u::print("secret is:", u::get_at_offset<int>(a, 0));
 	u::print("second secret is:", u::get_at_offset<int>(a, 20));
 	u::print(u::get_at_offset<char*>(a, 4));
+	private_func(&a);
 
 }
