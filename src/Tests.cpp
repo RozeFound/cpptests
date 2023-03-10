@@ -140,7 +140,7 @@ void test_access_private_members() {
 
 	A a;
 
-	auto signature = "\x55\x48\x89\xE5\x48\x83\xEC\x10\x40\x88\xF0";
+	auto signature = u::to_bytes("55 48 89 E5 48 83 EC 10 40 88 f0 48 89 7D F8 24 01");
 	auto func_address = u::basic_sigscan(u::get_module_base(), signature);
 	auto private_func = (void(__cdecl*)(void* _this))func_address;
 

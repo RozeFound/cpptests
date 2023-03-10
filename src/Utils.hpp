@@ -1,12 +1,12 @@
 #pragma once
 
-#include <type_traits>
 #include <iostream>
 #include <chrono>
 #include <functional>
 #include <optional>
 #include <filesystem>
-#include <sstream>
+
+#include "extensions.hpp"
 
 #ifdef THIRD_PARTY
 #include <xxh3.h>
@@ -27,7 +27,42 @@ namespace RozeFoundUtils {
 
 	uint32_t get_process_id (std::string_view process_name);
 	std::ptrdiff_t get_module_base (uint32_t process_id = 0, std::string_view module = "");
-	std::ptrdiff_t basic_sigscan(std::ptrdiff_t start, std::string_view signature);
+
+	template<typename T> concept suitable = requires (T container) { container.size(); };
+	std::ptrdiff_t basic_sigscan(std::ptrdiff_t start, suitable auto signature) {
+
+		std::size_t size = signature.size();
+        auto hits = std::vector<bool>(size);
+        auto _addr = (std::byte*)start;
+
+        while (!hits.back()) {
+            
+			std::size_t count = 0;
+            for (const auto byte : signature)
+                if (*(_addr++) == byte) 
+					hits.at(count++) = true;
+                else break;
+
+        }
+
+        return std::ptrdiff_t(_addr - size);
+
+    }
+
+	constexpr auto to_bytes (std::integral auto&& ... Ts) noexcept {
+		return std::array { std::byte(Ts) ... };
+	}
+
+	constexpr auto to_bytes (const std::string_view hex_values) noexcept {
+
+		auto bytes = std::vector<std::byte>();
+
+		for (const auto& hex_value : hex_values | ext::split)
+			bytes.push_back(std::byte(std::stoi(hex_value.data(), 0, 16)));
+
+		return bytes;
+
+	}
 
 	class Timer {
 
@@ -175,54 +210,5 @@ namespace RozeFoundUtils {
 		template<class outIt> outIt unhex_to(outIt it, std::string_view bytes) {
 			return std::move(unhex_to(it, (std::byte*)bytes.data(), bytes.size()));
 		}
-	}
-}
-
-namespace ext {
-	struct join_t {
-		template<typename T>
-		std::string operator()(const T& Data) const {
-
-			std::stringstream ss;
-
-			ss << '[';
-
-			for (size_t i = 0; i < Data.size() - 1; i++)
-				ss << Data[i] << ", ";
-
-			ss << Data.back() << ']';
-
-			return ss.str();
-		}
-	};
-
-	const join_t join = {};
-
-	template<typename T>
-	std::string operator|(const T& Data, join_t f) {
-		return f(Data);
-	}
-
-	struct widen_t {
-		std::wstring operator()(std::string_view string) const {
-
-			std::wstring result;
-
-			wchar_t wch;
-
-			for (char ch : string) {
-				size_t len = std::mbtowc(&wch, &ch, 4);
-				result.append(1, wch);
-			}
-
-			return result;
-		}
-	};
-
-	const widen_t widen = {};
-
-	template<typename T>
-	std::wstring operator|(const T& Data, widen_t f) {
-		return f(Data);
 	}
 }

@@ -53,27 +53,6 @@ namespace RozeFoundUtils {
 
     }
 
-    std::ptrdiff_t basic_sigscan(std::ptrdiff_t start, std::string_view signature) {
-
-        auto _addr = (char*)start;
-        std::vector<bool> hits(signature.size());
-
-        while (hits.at(signature.size() - 1) != true) {
-            
-            for (std::size_t i = 0; i < signature.size(); i++) {
-
-                if (*(_addr++) == signature.at(i))
-                    hits.at(i) = true;
-                else break;
-
-            }
-
-        }
-
-        return std::ptrdiff_t(_addr - signature.size());
-
-    }
-
     void makeTimer(std::string_view name, std::function<void()> func) {
         Timer timer(name);
         func();
