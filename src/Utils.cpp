@@ -84,7 +84,7 @@ namespace RozeFoundUtils {
         }
     }
 
-    void parallelFor(size_t start, size_t end, std::function<void(int)> function) {
+    void parallel_for(size_t start, size_t end, std::function<void(int)> function) {
 
         size_t thread_count = std::min((size_t)std::thread::hardware_concurrency(), end);
         std::vector<std::thread> threads;

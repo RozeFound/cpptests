@@ -107,7 +107,7 @@ namespace RozeFoundUtils {
 
         std::optional<std::string> read_from_file(std::filesystem::path filepath);
 
-        void parallelFor(size_t start, size_t end, std::function<void(int)> function);
+        void parallel_for(size_t start, size_t end, std::function<void(int)> function);
 
 #ifdef THIRD_PARTY
 

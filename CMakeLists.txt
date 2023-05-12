@@ -9,6 +9,7 @@ file(GLOB SOURCES
 include_directories("include")
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCES})
 target_compile_features(${CMAKE_PROJECT_NAME} PUBLIC cxx_std_20)
+set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 find_package(fmt)
 

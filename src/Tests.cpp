@@ -23,15 +23,17 @@
 
 namespace u = RozeFoundUtils;
 
-bool is_prime(int n) {
+constexpr bool is_prime (const std::integral auto n) {
 
 	if (n == 2) return true;
-	else if (n <= 1 || n % 2 == 0) return false;
+	else if (n <= 1 || ~n & 1)
+		return false;
 
-	for (int i = 3; i < std::sqrt(n); i += 2)
+	for (int i = 3; i < n / 2; i += 2)
 		if (n % i == 0) return false;
 
 	return true;
+	
 }
 
 void MultiThreading() {
